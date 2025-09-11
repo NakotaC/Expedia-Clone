@@ -9,6 +9,29 @@ import {
 } from "firebase/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { fetch_users, login_user } from "../Redux/Authantication/auth.action";
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+
+// Get a reference to your Firestore database (assuming it's initialized elsewhere)
+const db = getFirestore();
+
+async function checkPhoneNumberExistsInFirestore(phoneNumberToCheck) {
+  const usersRef = collection(db, "users"); // Reference to your 'users' collection
+
+  // Create a query: find documents in 'users' where 'phoneNumber' field equals phoneNumberToCheck
+  const q = query(usersRef, where("phoneNumber", "==", phoneNumberToCheck));
+
+  // Execute the query
+  const querySnapshot = await getDocs(q);
+
+  // Check if any documents were found
+  if (!querySnapshot.empty) {
+    console.log("Phone number exists!");
+    return true; // The phone number exists
+  } else {
+    console.log("Phone number does not exist.");
+    return false; // The phone number does not exist
+  }
+}
 
 const auth = getAuth(firebase_app);
 const state = {
@@ -31,18 +54,18 @@ export const Login = () => {
 
   const { number, otp, verify } = check;
 
-  // let exist = false;
-  // let data = {};
+  let exist = false;
+  let data = {};
 
-  // for (let i = 0; i <= user.length - 1; i++) {
-  //   if (user[i].number == number) {
-  //     exist = true;
-  //     data = user[i];
-  //     break;
-  //   }
-  // }
-  // console.log(user)
-  //
+  for (let i = 0; i <= user.length - 1; i++) {
+     if (user[i].number == number) {
+       exist = true;
+       data = user[i];
+       break;
+     }
+   }
+   console.log(user)
+  
 
   function onCapture() {
     if (!window.recaptchaVerifier) {
@@ -61,6 +84,7 @@ export const Login = () => {
     const phoneNumber = `+1${number}`;
     const appVerifier = window.recaptchaVerifier;
     if (number.length === 10) {
+      const exists = checkPhoneNumberExistsInFirestore(phoneNumber);
       if (exist) {
         signInWithPhoneNumber(auth, phoneNumber, appVerifier)
           .then((confirmationResult) => {
