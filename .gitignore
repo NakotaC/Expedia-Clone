@@ -1,12 +1,10 @@
 # Firebase build and deployment files
 /firebase-debug.log
 /firebase-debug.*.log
-.firebaserc
 /src/01_firebase/
 ServiceKey.json
 
 # Firebase Hosting
-/firebase.json
 *.cache
 hosting/.cache
 
