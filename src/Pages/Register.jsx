@@ -50,14 +50,12 @@ export const Register = () => {
       number,
       user_name,
       password,
-      email: "",
-      dob: "",
-      gender: "",
-      marital_status: null,
     };
     dispatch(userRigister(newObj));
     setCheck(state);
+    setTimeout(() => {
     window.location = "/login";
+    }, 2000);
   };
 
   // oonCapture
@@ -80,7 +78,7 @@ export const Register = () => {
   function handleVerifyNumber() {
     document.querySelector("#nextButton").innerText = "Please wait...";
     onCapture();
-    const phoneNumber = `+91${number}`;
+    const phoneNumber = `+1${number}`;
     const appVerifier = window.recaptchaVerifier;
     if (number.length === 10) {
       if (exist) {
@@ -146,7 +144,7 @@ export const Register = () => {
   };
 
   useEffect(() => {
-    dispatch(fetch_users);
+    dispatch(fetch_users());
   }, []);
 
   return (

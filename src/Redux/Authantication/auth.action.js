@@ -1,4 +1,12 @@
-import axios from "axios";
+import firebase_app from "../../01_firebase/config_firebase";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import {
   GET_USERS,
   LOGIN_ERROR,
@@ -9,6 +17,8 @@ import {
   REGISTER_REQUEST,
   REGISTER_SUCCESSFUL,
 } from "./auth.actionType";
+
+const db = getFirestore(firebase_app);
 
 export const login_request = () => {
   return { type: LOGIN_REQUEST };
@@ -42,29 +52,30 @@ export const handlelogout_user = () => {
 
 export const userRigister = (userData) => async (dispatch) => {
   dispatch(register_request());
-  let res = await axios
-    .post(`http://localhost:8080/users`, userData)
-    .then((res) => {
-      dispatch(register_success(res.data));
-      // console.log(res.data)
-    })
-    .catch((err) => {
-      dispatch(register_error());
-    });
+  try {
+    const docRef = await addDoc(collection(db, "users"), userData);
+    dispatch(register_success({ id: docRef.id, ...userData }));
+    console.log("User registered in Firestore:", docRef.id);
+  } catch (err) {
+    console.error("Firestore registration error:", err);
+    dispatch(register_error());
+  }
 };
 
 // get users
 
-export const fetch_users = (dispatch) => {
+export const fetch_users = () => async (dispatch) => {
   dispatch(register_request());
-  axios
-    .get(`http://localhost:8080/users`)
-    .then((res) => {
-      dispatch(get_users(res.data));
-    })
-    .catch((err) => {
-      dispatch(register_error());
+  try {
+    const querySnapshot = await getDocs(collection(db, "users"));
+    const users = [];
+    querySnapshot.forEach((doc) => {
+      users.push({ id: doc.id, ...doc.data() });
     });
+    dispatch(get_users(users));
+  } catch (err) {
+    dispatch(register_error());
+  }
 };
 
 // Logint funcnality

@@ -31,38 +31,34 @@ export const Login = () => {
 
   const { number, otp, verify } = check;
 
-  let exist = false;
-  let data = {};
+  // let exist = false;
+  // let data = {};
 
-  for (let i = 0; i <= user.length - 1; i++) {
-    if (user[i].number == number) {
-      exist = true;
-      data = user[i];
-      break;
-    }
-  }
+  // for (let i = 0; i <= user.length - 1; i++) {
+  //   if (user[i].number == number) {
+  //     exist = true;
+  //     data = user[i];
+  //     break;
+  //   }
+  // }
   // console.log(user)
   //
 
   function onCapture() {
-    window.recaptchaVerifier = new RecaptchaVerifier(
-      "recaptcha-container",
-      {
-        size: "invisible",
-        callback: (response) => {
-          handleVerifyNumber();
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
-          // ...
-        },
-      },
-      auth
-    );
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        "recaptcha-container",
+        { size: "invisible" },
+        auth
+      );
+      window.recaptchaVerifier.render();
+    }
   }
 
   function handleVerifyNumber() {
     document.querySelector("#nextText").innerText = "Please wait...";
     onCapture();
-    const phoneNumber = `+91${number}`;
+    const phoneNumber = `+1${number}`;
     const appVerifier = window.recaptchaVerifier;
     if (number.length === 10) {
       if (exist) {
@@ -72,22 +68,19 @@ export const Login = () => {
             // user in with confirmationResult.confirm(code).
             window.confirmationResult = confirmationResult;
             setCheck({ ...check, verify: true });
-            document.querySelector(
-              "#loginMesageSuccess"
-            ).innerHTML = `Otp Send To ${number} !`;
+            document.querySelector("#loginMesageSuccess").innerHTML = `Otp Send To ${number} !`;
             document.querySelector("#loginMesageError").innerHTML = "";
             document.querySelector("#nextText").style.display = "none";
             // ...
           })
           .catch((error) => {
             // Error; SMS not sent
-            // document.querySelector("#nextText").innerText = "Server Error"
+             document.querySelector("#nextText").innerText = "Server Error"
             // ...
           });
       } else {
         document.querySelector("#loginMesageSuccess").innerHTML = ``;
-        document.querySelector("#loginMesageError").innerHTML =
-          "User does not exist Please Create Your Account !";
+        document.querySelector("#loginMesageError").innerHTML ="User does not exist Please Create Your Account !";
           setInterval(() => {
             window.location="/register"
           }, 1000);
