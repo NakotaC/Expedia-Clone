@@ -1,12 +1,26 @@
-import axios from "axios";
+import firebase_app from "../../01_firebase/config_firebase";
+import { deleteDoc, doc } from "firebase/firestore";
 import {
-  DELETE_FLIGHTS,
-  FETCH_FLIGHTS,
-  FLIGHT_FAILURE,
-  FLIGHT_REQUEST,
-  GET_FLIGHT_SUCCESS,
-  POST_FLIGHT_SUCCESS,
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import {
+  GET_USERS,
+  LOGIN_ERROR,
+  LOGIN_REQUEST,
+  LOGIN_SUCCESSFUL,
+  LOGOUT_USER,
+  REGISTER_ERROR,
+  REGISTER_REQUEST,
+  REGISTER_SUCCESSFUL,
 } from "./actionType";
+
+const db = getFirestore(firebase_app);
+
 
 export const getFlightSuccess = (payload) => {
   return { type: GET_FLIGHT_SUCCESS, payload };
@@ -33,46 +47,34 @@ export const handleDeleteProduct = (payload) => {
   return { type: DELETE_FLIGHTS, payload };
 };
 
-export const addFlight = (payload) => (dispatch) => {
+export const addFlight = (payload) => async (dispatch) => {
   dispatch(flightRequest());
-
-  axios
-    .post("http://localhost:8080/flight", payload) // https://makemytrip-api-data.onrender.com/flight
-    .then(() => {
-      dispatch(postFlightSuccess());
-    })
-    .catch((err) => {
-      dispatch(flightFailure());
-    });
+  try {
+    await addDoc(collection(db, "flight"), payload);
+    dispatch(postFlightSuccess());
+  } catch (err) {
+    dispatch(flightFailure());
+  }
 };
 
 //
-export const fetchFlightProducts = (limit) => (dispatch) => {
+export const fetchFlightProducts = (limit) => async (dispatch) => {
   dispatch(flightRequest());
-  axios
-    .get(`http://localhost:8080/flight?_limit=${limit}`)   //https://makemytrip-api-data.onrender.com/flight?_limit=${limit}
-    .then((res) => {
-      dispatch(fetch_flights_product(res.data));
-    })
-    .catch((err) => {
-      dispatch(flightFailure());
+  try {
+    const querySnapshot = await getDocs(collection(db, "flight"));
+    let flights = [];
+    querySnapshot.forEach((doc, idx) => {
+      if (idx < limit) flights.push({ id: doc.id, ...doc.data() });
     });
+    dispatch(fetch_flights_product(flights));
+  } catch (err) {
+    dispatch(flightFailure());
+  }
 };
 
 export const DeleteFlightProducts = (deleteId) => async (dispatch) => {
   try {
-    const res = await axios(
-      `http://localhost:8080/flight?${deleteId}`, //https://makemytrip-api-data.onrender.com/flight/${deleteId}
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    let data = await res.json();
-    console.log(data);
-
+    await deleteDoc(doc(db, "flight", deleteId));
     dispatch(handleDeleteProduct(deleteId));
   } catch (e) {
     console.log(e);
