@@ -9,14 +9,12 @@ import {
   where,
 } from "firebase/firestore";
 import {
-  GET_USERS,
-  LOGIN_ERROR,
-  LOGIN_REQUEST,
-  LOGIN_SUCCESSFUL,
-  LOGOUT_USER,
-  REGISTER_ERROR,
-  REGISTER_REQUEST,
-  REGISTER_SUCCESSFUL,
+GET_FLIGHT_SUCCESS,
+  POST_FLIGHT_SUCCESS,
+  FLIGHT_REQUEST,
+  FLIGHT_FAILURE,
+  FETCH_FLIGHTS,
+  DELETE_FLIGHTS,
 } from "./actionType";
 
 const db = getFirestore(firebase_app);
