@@ -2,23 +2,33 @@ import { Box, Image, Flex, Button } from "@chakra-ui/react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+import firebase_app from "../../01_firebase/config_firebase";
 
 export default function FlightCard({ data }) {
   const { id, airline, from, to, departure, arrival, price, totalTime } = data;
   const toast = useToast();
+const db = getFirestore(firebase_app);
 
-  const handleClick = () => {
-    axios.post(`http://localhost:8000/flightcart`, data);
-    //   .then((res) => console.log(res))
-    //   .catch((err) => console.log(err))
-
-    toast({
-      title: "Flight Add to Cart",
-      description: "Please Proceed to Payment",
-      status: "success",
-      duration: 9000,
-      isClosable: true,
-    });
+  const handleClick = async () => {
+    try {
+      await addDoc(collection(db, "flightcart"), data);
+      toast({
+        title: "Flight Added to Cart",
+        description: "Please Proceed to Payment",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Could not add flight to cart.",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
   };
 
   
