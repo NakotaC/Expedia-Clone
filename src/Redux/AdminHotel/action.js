@@ -1,4 +1,3 @@
-import axios from "axios";
 import {
   HOTEL_FAILURE,
   HOTEL_REQUEST,
@@ -7,72 +6,50 @@ import {
   NEW_GET_HOTELS_SUCCESS,
   DELETE_HOTEL,
 } from "./actionType";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, limit as fsLimit } from "firebase/firestore";
+import firebase_app from "../../01_firebase/config_firebase";
 
-export const getHotelSuccess = (payload) => {
-  return { type: GET_HOTEL_SUCCESS, payload };
-};
+const db = getFirestore(firebase_app);
 
-export const postHotelSuccess = (payload) => {
-  return { type: POST_HOTEL_SUCCESS };
-};
+export const getHotelSuccess = (payload) => ({ type: GET_HOTEL_SUCCESS, payload });
+export const postHotelSuccess = (payload) => ({ type: POST_HOTEL_SUCCESS });
+export const hotelRequest = () => ({ type: HOTEL_REQUEST });
+export const hotelFailure = () => ({ type: HOTEL_FAILURE });
+export const fetch_hotel = (payload) => ({ type: NEW_GET_HOTELS_SUCCESS, payload });
+export const handleDeleteHotel = (payload) => ({ type: DELETE_HOTEL, payload });
 
-export const hotelRequest = () => {
-  return { type: HOTEL_REQUEST };
-};
-
-export const hotelFailure = () => {
-  return { type: HOTEL_FAILURE };
-};
-
-export const fetch_hotel = (payload) => {
-  return { type: NEW_GET_HOTELS_SUCCESS, payload };
-};
-
-//
-export const handleDeleteHotel = (payload) => {
-  return { type: DELETE_HOTEL, payload };
-};
-
-//
-
-export const addHotel = (payload) => (dispatch) => {
+// Add a hotel to Firestore
+export const addHotel = (payload) => async (dispatch) => {
   dispatch(hotelRequest());
-
-  axios
-    .post("http://localhost:8080/hotel", payload) // https://makemytrip-api-data.onrender.com/hotel
-    .then(() => {
-      dispatch(postHotelSuccess());
-    })
-    .catch((err) => {
-      dispatch(hotelFailure());
-    });
+  try {
+    await addDoc(collection(db, "hotel"), payload);
+    dispatch(postHotelSuccess());
+  } catch (err) {
+    dispatch(hotelFailure());
+  }
 };
 
-export const fetchingHotels = (limit) => (dispatch) => {
-  axios
-    .get(`http://localhost:8080/hotel?_limit=${limit}`) // https://makemytrip-api-data.onrender.com/hotel?_limit=${limit}
-    .then((res) => {
-      //   console.log(res.data);
-      dispatch(fetch_hotel(res.data));
-    })
-    .catch((err) => {
-      console.log(err);
+// Fetch hotels from Firestore with limit
+export const fetchingHotels = (limit) => async (dispatch) => {
+  dispatch(hotelRequest());
+  try {
+    const q = fsLimit ? collection(db, "hotel") : collection(db, "hotel");
+    const querySnapshot = await getDocs(fsLimit ? fsLimit(collection(db, "hotel"), limit) : collection(db, "hotel"));
+    const hotels = [];
+    querySnapshot.forEach((doc) => {
+      hotels.push({ id: doc.id, ...doc.data() });
     });
+    dispatch(fetch_hotel(hotels));
+  } catch (err) {
+    dispatch(hotelFailure());
+    console.log(err);
+  }
 };
 
+// Delete a hotel from Firestore
 export const DeleteHotel = (deleteId) => async (dispatch) => {
   try {
-    const res = await fetch(
-      `http://localhost:8080/hotel/${deleteId}`, // https://makemytrip-api-data.onrender.com/hotel/${deleteId}
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    let data = await res.json();
-    console.log(data);
+    await deleteDoc(doc(db, "hotel", String(deleteId)));
     dispatch(handleDeleteHotel(deleteId));
   } catch (e) {
     console.log(e);

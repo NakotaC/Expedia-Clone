@@ -66,6 +66,7 @@ export const fetchingHotels = (sort = "price", order = "asc", page = 1) => async
 // Delete a hotel from Firestore
 export const DeleteHotel = (deleteId) => async (dispatch) => {
   try {
+    console.log("Deleting hotel with ID:", deleteId, typeof deleteId);
     await deleteDoc(doc(db, "hotel", deleteId));
     dispatch(handleDeleteHotel(deleteId));
   } catch (e) {
