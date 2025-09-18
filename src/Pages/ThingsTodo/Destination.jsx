@@ -1,4 +1,5 @@
-import axios from 'axios';
+import { getFirestore, collection, getDocs, query, where } from "firebase/firestore";
+import firebase_app from "../../01_firebase/config_firebase";
 import React from 'react'
 import { useState } from 'react';
 import { useEffect } from 'react';
@@ -17,12 +18,23 @@ export const Destination = () => {
   let place = searchParams.get("place")
   
   
-  useEffect(()=>{
-    axios.get(`https://happy-sunglasses-eel.cyclic.app/Things_todo?place=${place}`).then((response) => {
-        setPlaces(response.data)
-     console.log(response.data)
-    });
-  },[])
+useEffect(() => {
+    const fetchThings = async () => {
+      const db = getFirestore(firebase_app);
+      let q = collection(db, "Things_todo");
+      if (place) {
+        q = query(q, where("place", "==", place));
+      }
+      const querySnapshot = await getDocs(q);
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push({ id: doc.id, ...doc.data() });
+      });
+      setPlaces(data);
+      console.log(data);
+    };
+    fetchThings();
+  }, [place]);
  
  
   return (
