@@ -16,7 +16,6 @@
 
 <h2>Dependency</h2>
 
-- axios
 - redux
 - react-redux
 - redux thunk
