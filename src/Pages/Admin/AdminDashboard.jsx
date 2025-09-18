@@ -1,7 +1,7 @@
-import axios from "axios";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import firebase_app from "../../01_firebase/config_firebase";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-// import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { fetchFlightProducts } from "../../Redux/AdminFlights/action";
 import "./AdminDashboard.Module.css";
@@ -16,58 +16,33 @@ export const AdminDashboard = () => {
   const [things, setThings] = useState(0);
  const [loading, setLoading] = useState(false);
 
-  const getHotel = () => {
-    setLoading(true);
-    axios
-      .get("http://localhost:8080/flight")
-      .then((res) => {
-        setFlight(res.data.length);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    //
-    axios
-      .get("http://localhost:8080/hotel")
-      .then((res) => {
-        setHotel(res.data.length);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    //
-    axios
-      .get("http://localhost:8080/users")
-      .then((res) => {
-        setUsers(res.data.length);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const db = getFirestore(firebase_app);
 
-      axios
-      .get("http://localhost:8080/giftcards")
-      .then((res) => {
-        setGiftCard(res.data.length);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    
-      axios
-      .get("http://localhost:8080/Things_todo")
-      .then((res) => {
-        setThings(res.data.length);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    
-    
+  const getStats = async () => {
+    setLoading(true);
+    try {
+      const flightSnap = await getDocs(collection(db, "flight"));
+      setFlight(flightSnap.size);
+
+      const hotelSnap = await getDocs(collection(db, "hotel"));
+      setHotel(hotelSnap.size);
+
+      const usersSnap = await getDocs(collection(db, "users"));
+      setUsers(usersSnap.size);
+
+      const giftCardSnap = await getDocs(collection(db, "giftcards"));
+      setGiftCard(giftCardSnap.size);
+
+      const thingsSnap = await getDocs(collection(db, "Things_todo"));
+      setThings(thingsSnap.size);
+    } catch (err) {
+      console.log(err);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
-    getHotel();
+    getStats();
   }, []);
 
   return (

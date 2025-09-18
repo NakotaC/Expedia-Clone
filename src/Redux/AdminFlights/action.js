@@ -9,7 +9,7 @@ import {
   where,
 } from "firebase/firestore";
 import {
-GET_FLIGHT_SUCCESS,
+  GET_FLIGHT_SUCCESS,
   POST_FLIGHT_SUCCESS,
   FLIGHT_REQUEST,
   FLIGHT_FAILURE,
