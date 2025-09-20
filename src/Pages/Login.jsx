@@ -18,7 +18,7 @@ async function checkPhoneNumberExistsInFirestore(phoneNumberToCheck) {
   const usersRef = collection(db, "users"); // Reference to your 'users' collection
 
   // Create a query: find documents in 'users' where 'phoneNumber' field equals phoneNumberToCheck
-  const q = query(usersRef, where("phoneNumber", "==", phoneNumberToCheck));
+  const q = query(usersRef, where("number", "==", phoneNumberToCheck));
 
   // Execute the query
   const querySnapshot = await getDocs(q);
@@ -84,8 +84,8 @@ export const Login = () => {
     const phoneNumber = `+1${number}`;
     const appVerifier = window.recaptchaVerifier;
     if (number.length === 10) {
-      const exists = checkPhoneNumberExistsInFirestore(phoneNumber);
-      if (exist) {
+      const exists = checkPhoneNumberExistsInFirestore(number);
+      if (exists) {
         signInWithPhoneNumber(auth, phoneNumber, appVerifier)
           .then((confirmationResult) => {
             // SMS sent. Prompt user to type the code from the message, then sign the

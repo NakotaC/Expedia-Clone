@@ -1,6 +1,6 @@
 <h1>Chalo Ghume</h1>
 
-<p>This project is a clone of the Expedia website, created by Team of 5 starting with Kumkum (Team Lead), Ashish, Amit, Sagar Balsaraf, and Sarim . The purpose of this project is to showcase our skills and knowledge in HTML, CSS, JavaScript, React, Redux, and Json-Server.<p>
+<p>This project is a clone of the Expedia website, created by Team of 5 starting with Nakota, Jayson, Daniel, Sofi, & Anish. The purpose of this project is to showcase our skills and knowledge in HTML, CSS, JavaScript, React, Redux, and Firebase.<p>
 
 
 <h2>Tech Stack</h2>
@@ -10,8 +10,7 @@
 - JavaScript
 - React
 - Redux
-- Json-Server
-- firebase
+- Firebase
 
 
 <h2>Dependency</h2>
@@ -22,7 +21,6 @@
 - chakraUI
 - firebase
 - font-awesome
-- json-server
 - react-router-dom
 - better-react-carousel
 
@@ -42,10 +40,10 @@
 To run this project locally, follow the steps below:
 
 . Clone the repository by running the following command:
-git clone https://github.com/kumkumdutta/interesting-stretch-8935.git
+git clone https://github.com/NakotaC/Expedia-Clone.git
 
 . Navigate to the project directory:
-cd hesitant-river-6235
+cd Expedia-Clone
 
 . Install the dependencies:
 npm install
@@ -53,8 +51,7 @@ npm install
 . Start the server:
 npm start
 
-. Start JSON- Server:
-npm run server
+. Update firebase credentials
 
 . Open the website in your browser:
 http://localhost:3000/
@@ -62,10 +59,9 @@ http://localhost:3000/
 
 <h2>Deployment</h2>
 
-This project has been deployed using Vercel at the following URL:
+This project has been deployed using Firebase at the following URL:
 
-https://interesting-stretch-8935-liart.vercel.app/
-
+https://expedia-clone-5cab0.firebaseapp.com/
 
 This is Login and Signup pages:-
 ![login](https://user-images.githubusercontent.com/112754519/231046318-135d34cb-0ae7-46c3-851c-6889441c62de.PNG)

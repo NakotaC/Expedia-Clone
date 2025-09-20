@@ -1,33 +1,33 @@
-import React, { useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import FlightCard from "./FlightCard";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import firebase_app from "../../01_firebase/config_firebase";
 
-const getData = async (page, priceValue) => {
-  let res = await axios.get(
-    `https://makemytrip-api-data.onrender.com/flight?_page=${page}&_limit=5?&price_gte=${
-      priceValue - 2000
-    }&price_lte=${priceValue}`
-  );
-  return res.data;
-};
-
-export default function FlightList({ page, priceValue }) {
-  const [data, setData] = React.useState([]);
+export default function FlightList() {
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    getData(page, priceValue).then((res) => {
-      setData(res);
-    });
-  }, [page, priceValue]);
+    const fetchFlights = async () => {
+      const db = getFirestore(firebase_app);
+      const querySnapshot = await getDocs(collection(db, "flight"));
+      const flights = [];
+      querySnapshot.forEach((doc) => {
+        flights.push({ id: doc.id, ...doc.data() });
+      });
+      console.log("Fetched flights:", flights);
+      setData(flights);
+    };
+    fetchFlights();
+  }, []);
 
   return (
     <div>
       {data.length > 0 &&
         data.map((item) => {
           return (
-            <div key={item.id}>
-              <FlightCard data={item} />
-            </div>
+          <div key={item.id}>
+            <FlightCard data={item} />
+          </div>
           );
         })}
     </div>

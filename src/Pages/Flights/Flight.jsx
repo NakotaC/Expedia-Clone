@@ -43,15 +43,15 @@ const swapValuehandler = () => {
             <div>
               <div className="homeInputs">
                 <input name="type" type="radio" id="inputs" />
-                <label for="inputs">ONE WAY</label>
+                <label htmlFor="inputs">ONE WAY</label>
               </div>
               <div className="homeInputs">
                 <input name="type" type="radio" id="inputs2" />
-                <label for="inputs2">ROUND TRIP</label>
+                <label htmlFor="inputs2">ROUND TRIP</label>
               </div>
               <div className="homeInputs">
                 <input name="type" type="radio" id="inputs3" />
-                <label for="inputs3">MULTI CITY</label>
+                <label htmlFor="inputs3">MULTI CITY</label>
               </div>
             </div>
             <div>

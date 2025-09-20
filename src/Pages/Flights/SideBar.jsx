@@ -95,12 +95,7 @@ const SideBar = () => {
           height={"auto"}
           padding="20px"
         >
-          <Image
-            src="https://mmt.servedbyadbutler.com/getad.img/;libID=3737167"
-            width={"90%"}
-            margin="auto"
-            marginBottom={"20px"}
-          />
+
 
           {/* Pagination Part UI Start */}
           <Stack spacing={4} direction='row' align='center'>

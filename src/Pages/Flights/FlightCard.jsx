@@ -1,14 +1,14 @@
 import { Box, Image, Flex, Button } from "@chakra-ui/react";
-import axios from "axios";
 import { useToast } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import firebase_app from "../../01_firebase/config_firebase";
 
 export default function FlightCard({ data }) {
   const { id, airline, from, to, departure, arrival, price, totalTime } = data;
   const toast = useToast();
-const db = getFirestore(firebase_app);
+  const db = getFirestore(firebase_app);
+  const navigate = useNavigate();
 
   const handleClick = async () => {
     try {
@@ -17,15 +17,16 @@ const db = getFirestore(firebase_app);
         title: "Flight Added to Cart",
         description: "Please Proceed to Payment",
         status: "success",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
+      navigate("/checkout");
     } catch (error) {
       toast({
         title: "Error",
         description: "Could not add flight to cart.",
         status: "error",
-        duration: 9000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -69,29 +70,27 @@ const db = getFirestore(firebase_app);
         />
         <h1>{airline}</h1>
       </Box>
-      <Flex display={"flex"} flexDirection="column">
+      <Flex flexDirection="column">
         <h3 style={{ fontSize: "10px", fontWeight: "bold" }}>Departure</h3>
         <h3>{departure}</h3>
-        <b>{from} </b>
+        <b>{from}</b>
       </Flex>
-      <Flex display={"flex"} flexDirection="column">
+      <Flex flexDirection="column">
         <h3 style={{ fontSize: "10px", fontWeight: "bold" }}>Arrival</h3>
         <h3>{arrival}</h3>
-        <b style={{ fontSize: "14px" }}>{to} </b>
+        <b style={{ fontSize: "14px" }}>{to}</b>
       </Flex>
-      <Flex display={"flex"} flexDirection="column">
-        <h3>Duation</h3>
+      <Flex flexDirection="column">
+        <h3>Duration</h3>
         <b>{totalTime}</b>
       </Flex>
-      <Flex display={"flex"} flexDirection="column">
+      <Flex flexDirection="column">
         <h3>Price</h3>
         <b>{price}</b>
       </Flex>
-      <Link to={"/checkout"}>
-        <Button style={Booknow} onClick={handleClick}>
-          Book Now
-        </Button>
-      </Link>
+      <Button onClick={handleClick} colorScheme="teal">
+        Book Now
+      </Button>
     </Box>
   );
 }
