@@ -58,15 +58,16 @@ export const addFlight = (payload) => async (dispatch) => {
 //
 export const fetchFlightProducts = (limit) => async (dispatch) => {
   dispatch(flightRequest());
-  try {
+try {
     const querySnapshot = await getDocs(collection(db, "flight"));
-    let flights = [];
-    querySnapshot.forEach((doc, idx) => {
-      if (idx < limit) flights.push({ id: doc.id, ...doc.data() });
+    const flights = [];
+    querySnapshot.forEach((doc) => {
+      flights.push({ id: doc.id, ...doc.data() });
     });
     dispatch(fetch_flights_product(flights));
   } catch (err) {
     dispatch(flightFailure());
+        console.log(err);
   }
 };
 

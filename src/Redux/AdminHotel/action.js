@@ -29,12 +29,11 @@ export const addHotel = (payload) => async (dispatch) => {
   }
 };
 
-// Fetch hotels from Firestore with limit
+
 export const fetchingHotels = (limit) => async (dispatch) => {
   dispatch(hotelRequest());
   try {
-    const q = fsLimit ? collection(db, "hotel") : collection(db, "hotel");
-    const querySnapshot = await getDocs(fsLimit ? fsLimit(collection(db, "hotel"), limit) : collection(db, "hotel"));
+    const querySnapshot = await getDocs(collection(db, "hotel"));
     const hotels = [];
     querySnapshot.forEach((doc) => {
       hotels.push({ id: doc.id, ...doc.data() });
