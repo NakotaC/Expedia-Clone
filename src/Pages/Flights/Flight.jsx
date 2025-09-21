@@ -2,7 +2,7 @@
 import { useState } from "react";
 import React from "react";
 import { Button,} from "@chakra-ui/react";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import "./homePage.css";
 import styles from "../Stay/Stay.module.css";
 // import SideBar from "./SideBar";
@@ -17,13 +17,21 @@ const initialState = {
 
 export default function Flights() {
   const [PassengerData, setPassengerData] = useState(initialState);
+  const navigate = useNavigate();
+
+
   const handleChange = (e) => {
     setPassengerData({ ...PassengerData, [e.target.name]: e.target.value });
   };
 
   const handleClick = () => {
-    console.log(PassengerData);
-    setPassengerData(initialState);
+    const { from, to } = PassengerData;
+    if (from && to) {
+      navigate(`/flight?from=${from}&to=${to}`);
+    } else {
+      // Optional: show an alert or toast if from/to are not selected
+      alert("Please select both 'From' and 'To' locations.");
+    }
   };
 const swapValuehandler = () => {
     setPassengerData({
@@ -129,14 +137,14 @@ const swapValuehandler = () => {
             onClick={handleClick}
             
           >
-            <Link to={{ pathname: '/flight' }}>Search</Link>
+            Search
           
           </Button >
             {/* <button >Search</button> */}
           </div>
         </div>
       </div>
-
+      
       {/* <SideBar /> */}
       {/* <Footer /> */}
     </div>
