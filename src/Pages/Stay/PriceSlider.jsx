@@ -1,18 +1,21 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./PriceSlider.css";
-import StayData from "./StayData";
 
-const PriceSlider = () => {
- const [sliderValues, setSliderValues] = useState({ min: 130, max: 250 });
+const PriceSlider = ({ onPriceRangeChange }) => {
+  const [sliderValues, setSliderValues] = useState({ min: 130, max: 250 });
 
   const handleSliderChange = (event) => {
     const { name, value } = event.target;
-    setSliderValues({ ...sliderValues, [name]: parseInt(value, 10) });
+    const newValues = { ...sliderValues, [name]: parseInt(value, 10) };
+    setSliderValues(newValues);
+    
+    if (onPriceRangeChange) {
+      onPriceRangeChange([newValues.min, newValues.max]);
+    }
   };
 
   const formatSliderValue = (value) => `₹${value.toLocaleString()}`;
 
-  
   return (
     <div className="price-range-slider">
       <div

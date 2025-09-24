@@ -1,60 +1,85 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { DeleteHotel, fetchingHotels } from "../../Redux/StayReducer/action";
+import { fetchingHotels } from "../../Redux/StayReducer/action";
 import "./StayData.css";
-import PriceFilter from "./PriceFilter";
 import Sidebar from "./Sidebar";
 import Pagination from "./Pagination";
+import { useNavigate } from "react-router-dom";
 
 const StayData = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { data } = useSelector((store) => store.StayReducer);
   const checkInDate = useSelector((state) => state.StayReducer.checkInDate);
   const checkOutDate = useSelector((state) => state.StayReducer.checkOutDate);
   const selectedCity = useSelector((state) => state.StayReducer.selectedCity);
-  console.log("city",selectedCity);
-  console.log("In", checkInDate);
-  console.log("out", checkOutDate);
+  
   const [selectedPriceRange, setSelectedPriceRange] = useState([0, 10000]);
   const [filteredHotel, setFilteredHotel] = useState([]);
-  const [price, setPrice] = useState(""); // Define price state variable
+  const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   //Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const totalNumOfPages = Math.ceil(244 / 20); 
-
+  const totalNumOfPages = Math.ceil(filteredHotel.length / 20); 
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  const handleLeft = (id) => {
-    dispatch(DeleteHotel(id));
+  const handleLeft = (hotel) => {
+    localStorage.setItem("selectedHotel", JSON.stringify(hotel));
+    localStorage.setItem("checkInDate", checkInDate);
+    localStorage.setItem("checkOutDate", checkOutDate);
+    navigate("/checkout");
   };
 
-  // useEffect(() => {
-  //   dispatch(fetchingHotels("","",""));
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchingHotels("","",1));
+  }, [dispatch]);
 
   useEffect(() => {
     if (data) {
-      setFilteredHotel(
-        data.filter(
-          (hotel) =>
-            hotel.price >= selectedPriceRange[0] &&
-            hotel.price <= selectedPriceRange[1]
-        )
+      let filtered = [...data]
+      if (selectedCity) {
+        filtered = filtered.filter(hotel => 
+          hotel.place?.toLowerCase().includes(selectedCity.toLowerCase()) ||
+          hotel.name?.toLowerCase().includes(selectedCity.toLowerCase())
+        );
+      }
+      
+      filtered = filtered.filter(
+        (hotel) =>
+          hotel.price >= selectedPriceRange[0] &&
+          hotel.price <= selectedPriceRange[1]
       );
-      console.log(filteredHotel);
+      
+      if (sortBy === "price") {
+        filtered.sort((a, b) => {
+          return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
+        });
+      } else if (sortBy === "rating") {
+        filtered.sort((a, b) => {
+          const ratingA = a.rating || 0;
+          const ratingB = b.rating || 0;
+          return sortOrder === "asc" ? ratingA - ratingB : ratingB - ratingA;
+        });
+      }
+      
+      setFilteredHotel(filtered);
     }
-  }, [data, selectedPriceRange]);
+  }, [data, selectedPriceRange, sortBy, sortOrder, selectedCity]);
 
-console.log(data)
   return (
     <div className="stay-data">
-      
       <div className="sidebar-container">
-        <Sidebar/>
+        <Sidebar 
+          onPriceRangeChange={setSelectedPriceRange}
+          onSortChange={(sort, order) => {
+            setSortBy(sort);
+            setSortOrder(order);
+          }}
+        />
       </div>
 
       {filteredHotel?.map((hotel) => (
@@ -66,9 +91,9 @@ console.log(data)
               <h3 className="stay-name">{hotel.name}</h3>
               <button
                 className="stay-left-btn"
-                onClick={() => handleLeft(hotel.id)}
+                onClick={() => handleLeft(hotel)}
               >
-                We have 5 left
+                Book Now
               </button>
             </div>
             <p className="stay-location">{hotel.location}</p>
